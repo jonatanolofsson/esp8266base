@@ -1,24 +1,24 @@
 [submodule "lib/ArduinoJson"]
-	path = lib/ArduinoJson
+	path = libs/ArduinoJson
 	url = git@github.com:bblanchon/ArduinoJson.git
 [submodule "lib/ESPAsyncUDP"]
-	path = lib/ESPAsyncUDP
+	path = libs/ESPAsyncUDP
 	url = git@github.com:me-no-dev/ESPAsyncUDP.git
 [submodule "lib/mDNSResolver"]
-	path = lib/mDNSResolver
+	path = libs/mDNSResolver
 	url = git@github.com:madpilot/mDNSResolver.git
 [submodule "lib/pubsubclient"]
-	path = lib/pubsubclient
+	path = libs/pubsubclient
 	url = git@github.com:jonatanolofsson/pubsubclient.git
 [submodule "lib/ESPAsyncTCP"]
-	path = lib/ESPAsyncTCP
+	path = libs/ESPAsyncTCP
 	url = git@github.com:me-no-dev/ESPAsyncTCP.git
 [submodule "lib/WiFiManager"]
-	path = lib/WiFiManager
+	path = libs/WiFiManager
 	url = git@github.com:tzapu/WiFiManager.git
 [submodule "lib/ESPAsyncWebServer"]
-	path = lib/ESPAsyncWebServer
+	path = libs/ESPAsyncWebServer
 	url = git@github.com:me-no-dev/ESPAsyncWebServer.git
 [submodule "lib/Arduino"]
-	path = lib/Arduino
+	path = libs/Arduino
 	url = git@github.com:jonatanolofsson/Arduino.git

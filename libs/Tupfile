@@ -1,0 +1,55 @@
+include_rules
+INCLUDE_FLAGS  = -I$(TOP)/libs/Arduino/cores/$(CHIP)
+INCLUDE_FLAGS += -I$(TOP)/libs/Arduino/variants/$(VARIANT)
+INCLUDE_FLAGS += -I$(TOP)/libs/Arduino/libraries
+INCLUDE_FLAGS += -I$(TOP)/libs/Arduino/tools/sdk/include
+INCLUDE_FLAGS += -I$(TOP)/libs/Arduino/tools/sdk/lwip/include
+
+: foreach Arduino/cores/$(CHIP)/*.S |> !asm |> Arduino/cores/$(CHIP)/%B.o ./<Arduino>
+: foreach Arduino/cores/$(CHIP)/*.c |> !cc |> Arduino/cores/$(CHIP)/%B.o ./<Arduino>
+: foreach Arduino/cores/$(CHIP)/umm_malloc/*.c |> !cc -I$(TOP)/libs/Arduino/cores/$(CHIP)/umm_malloc |> Arduino/cores/$(CHIP)/umm_malloc/%B.o ./<Arduino>
+: foreach Arduino/cores/$(CHIP)/spiffs/*.c |> !cc -I$(TOP)/libs/Arduino/cores/$(CHIP)/spiffs |> Arduino/cores/$(CHIP)/spiffs/%B.o ./<Arduino>
+: foreach Arduino/cores/$(CHIP)/libb64/*.c |> !cc -I$(TOP)/libs/Arduino/cores/$(CHIP)/libb64 |> Arduino/cores/$(CHIP)/libb64/%B.o ./<Arduino>
+: foreach Arduino/cores/$(CHIP)/*.cpp |> !cxx |> Arduino/cores/$(CHIP)/%B.o ./<Arduino>
+: foreach Arduino/libraries/ArduinoOTA/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ArduinoOTA -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src -I$(TOP)/libs/Arduino/libraries/ESP8266mDNS |> Arduino/libraries/ArduinoOTA/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266httpUpdate/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266httpUpdate/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src -I$(TOP)/libs/Arduino/libraries/ESP8266HTTPClient/src |> Arduino/libraries/ESP8266httpUpdate/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266mDNS/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266mDNS -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266mDNS/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266WebServer/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266WebServer/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266WebServer/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/Ethernet/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Ethernet/src -I$(TOP)/libs/Arduino/libraries/SPI |> Arduino/libraries/Ethernet/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/SD/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/SD/src -I$(TOP)/libs/Arduino/libraries/SPI |> Arduino/libraries/SD/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/SPISlave/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/SPISlave/src -I$(TOP)/libs/Arduino/libraries/SPISlave |> Arduino/libraries/DNSServer/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/Wire/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Wire |> Arduino/libraries/Wire/%B.o ./<Arduino>
+: foreach Arduino/libraries/DNSServer/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/DNSServer/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/DNSServer/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266AVRISP/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266AVRISP/src -I$(TOP)/libs/Arduino/libraries/ESP8266AVRISP/src -I$(TOP)/libs/Arduino/libraries/SPI -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266AVRISP/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266HTTPUpdateServer/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266HTTPUpdateServer/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src -I$(TOP)/libs/Arduino/libraries/ESP8266WebServer/src |> Arduino/libraries/ESP8266HTTPUpdateServer/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266NetBIOS/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266NetBIOS -I$(TOP)/libs/Arduino/libraries/ESP8266NetBIOS -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266NetBIOS/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266WiFi/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266WiFi/src/%B.o ./<Arduino>
+#: foreach Arduino/libraries/Servo/src/esp8266/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Servo/src -I$(TOP)/libs/Arduino/libraries/Servo/src/esp8266 |> Arduino/libraries/Servo/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/EEPROM/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/EEPROM |> Arduino/libraries/EEPROM/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266HTTPClient/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266HTTPClient/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266HTTPClient/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266LLMNR/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266LLMNR -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266LLMNR/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266SSDP/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266SSDP -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266SSDP/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266WiFiMesh/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266WiFiMesh/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266WiFiMesh/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/Hash/src/*.cpp Arduino/libraries/Hash/src/sha1/*.c |> !cxx -I$(TOP)/libs/Arduino/libraries/Hash/src -I$(TOP)/libs/Arduino/libraries/Hash/src/sha1 |> Arduino/libraries/ESP8266WiFiMesh/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/SPI/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/SPI |> Arduino/libraries/SPI/%B.o ./<Arduino>
+: foreach Arduino/libraries/Ticker/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Ticker |> Arduino/libraries/Ticker/%B.o ./<Arduino>
+: | ./<Arduino> |> !ar %<Arduino> |> libArduino.a ../<libs>
+
+
+: foreach ESPAsyncTCP/src/*.cpp |> !cxx -I$(TOP)/libs/ESPAsyncTCP/src |> ESPAsyncTCP/src/%B.o ./<ESPAsyncTCP>
+: | ./<ESPAsyncTCP> |> !ar %<ESPAsyncTCP> |> libESPAsyncTCP.a ../<libs>
+
+: foreach ESPAsyncUDP/src/*.cpp |> !cxx -I$(TOP)/libs/ESPAsyncUDP/src |> ESPAsyncUDP/src/%B.o ./<ESPAsyncUDP>
+: | ./<ESPAsyncUDP> |> !ar %<ESPAsyncUDP> |> libESPAsyncUDP.a ../<libs>
+
+: foreach ESPAsyncWebServer/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Hash/src -I$(TOP)/libs/ESPAsyncWebServer/src -I$(TOP)/libs/ESPAsyncTCP/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> ESPAsyncWebServer/src/%B.o ./<ESPAsyncWebServer>
+: | ./<ESPAsyncWebServer> |> !ar %<ESPAsyncWebServer> |> libESPAsyncWebServer.a ../<libs>
+
+: foreach mDNSResolver/src/*.cpp |> !cxx -I$(TOP)/libs/mDNSResolver/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> mDNSResolver/src/%B.o ./<mDNSResolver>
+: | ./<mDNSResolver> |> !ar %<mDNSResolver> |> libmDNSResolver.a ../<libs>
+
+: foreach WiFiManager/*.cpp |> !cxx -I$(TOP)/libs/WiFiManager -I$(TOP)/libs/Arduino/libraries/DNSServer/src -I$(TOP)/libs/Arduino/libraries/ESP8266WebServer/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> WiFiManager/%B.o ./<WiFiManager>
+: | ./<WiFiManager> |> !ar %<WiFiManager> |> libmWiFiManager.a ../<libs>
+
+: foreach pubsubclient/src/*.cpp |> !cxx -I$(TOP)/libs/pubsubclient/src |> pubsubclient/%B.o ./<pubsubclient>
+: | ./<pubsubclient> |> !ar %<pubsubclient> |> libpubsubclient.a ../<libs>
