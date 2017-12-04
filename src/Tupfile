@@ -1,0 +1,38 @@
+include_rules
+INCLUDE_FLAGS  = -I$(TOP)/lib/Arduino/cores/$(CHIP)
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/variants/$(VARIANT)
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/tools/sdk/include
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/tools/sdk/lwip/include
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ArduinoOTA
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266httpUpdate/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266mDNS
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266WebServer/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/Ethernet/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/SD/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/SPISlave/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/Wire
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/DNSServer/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266AVRISP/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266HTTPUpdateServer/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266NetBIOS
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266WiFi/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/Servo/src/esp8266
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/EEPROM
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266HTTPClient/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266LLMNR
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266SSDP
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/ESP8266WiFiMesh/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/Hash/src
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/SPI
+INCLUDE_FLAGS += -I$(TOP)/lib/Arduino/libraries/Ticker
+INCLUDE_FLAGS += -I$(TOP)/lib/ESPAsyncTCP/src
+INCLUDE_FLAGS += -I$(TOP)/lib/ESPAsyncUDP/src
+INCLUDE_FLAGS += -I$(TOP)/lib/ESPAsyncWebServer/src
+INCLUDE_FLAGS += -I$(TOP)/lib/mDNSResolver/src
+INCLUDE_FLAGS += -I$(TOP)/lib/WiFiManager
+INCLUDE_FLAGS += -I$(TOP)/lib/pubsubclient/src
+INCLUDE_FLAGS += -I$(TOP)/lib/ArduinoJson/src
+INCLUDE_FLAGS += -I$(TOP)/src
+
+: *.cpp |> !cxx |> lib%d.a ../<libs>
