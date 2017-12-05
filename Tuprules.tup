@@ -1,13 +1,15 @@
 TOP = $(TUP_CWD)
 
 CHIP = esp8266
-VARIANT = d1
+VARIANT = d1_mini
 
-LDFILE = esp8266.flash.4m1m.ld
+LDDIR = $(TOP)/ld
+#LDFILE = esp8266.flash.4m1m.ld
+LDFILE = eagle.flash.4m1m.ld
 
 TOOLCHAIN_DIR = /opt/esp-open-sdk/xtensa-lx106-elf
 CROSS_COMPILE = xtensa-lx106-elf-
-BOOTLOADER =  $(TOP)/lib/Arduino/bootloaders/eboot/eboot.elf
+BOOTLOADER =  $(TOP)/libs/Arduino/bootloaders/eboot/eboot.elf
 
 CC_TOOLCHAIN = $(TOOLCHAIN_DIR)/bin/$(CROSS_COMPILE)
 ESPTOOL = $(TOP)/tools/esptool
@@ -22,9 +24,6 @@ DISAS    = $(CC_TOOLCHAIN)objdump
 OBJDUMP  = $(CC_TOOLCHAIN)objdump
 SIZE     = $(CC_TOOLCHAIN)size
 
-LDDIR = $(TOP)/ldscripts
-LD_SCRIPT_PATH = $(LDDIR)/$(LDFILE)
-
 TARGET_FLAGS  = -DESP8266
 TARGET_FLAGS += -DARDUINO_ARCH_ESP8266
 TARGET_FLAGS += -DARDUINO_BOARD=\"ESP8266\"
@@ -37,13 +36,12 @@ CFLAGS += -DLWIP_OPEN_SRC
 CFLAGS += -DF_CPU=80000000L
 CFLAGS += -D__ets__
 CFLAGS += -Os
-CFLAGS += -g
 CFLAGS += -nostdlib
 CFLAGS += -Wl,-EL
 CFLAGS += -fno-inline-functions
 CFLAGS += -mlongcalls
 CFLAGS += -mtext-section-literals
-CFLAGS += -isystem$(TOP)/lib/Arduino/tools/sdk/libc/xtensa-lx106-elf/include
+CFLAGS += -isystem$(TOP)/libs/Arduino/tools/sdk/libc/xtensa-lx106-elf/include
 CFLAGS += -ffunction-sections
 CFLAGS += -fdata-sections
 CFLAGS += -falign-functions=4
@@ -56,48 +54,51 @@ CXXFLAGS += -fno-exceptions
 CFLAGS += -std=gnu99
 
 LDFLAGS  = $(TARGET_FLAGS)
-LDFLAGS += -L$(LDDIR)
-LDFLAGS += -T$(LD_SCRIPT_PATH)
-LDFLAGS += -Wl,--gc-sections
-LDFLAGS += -Xassembler
-LDFLAGS += -Wall
-LDFLAGS += -fno-exceptions
-LDFLAGS += -fno-rtti
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/libc/xtensa-lx106-elf/lib/libc.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/libc/xtensa-lx106-elf/lib/libm.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libmesh.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libwpa2.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libsmartconfig.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libespnow.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libpp.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libmain.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libwpa.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/liblwip_gcc.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libnet80211.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libwps.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libcrypto.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libphy.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libhal.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libaxtls.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libgcc.a
-LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libstdc++.a
-#LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libairkiss.a
-#LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libat.a
-#LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libdriver.a
-#LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libjson.a
-#LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libpwm.a
-#LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libssl.a
-#LDFLAGS += $(TOP)/lib/Arduino/tools/sdk/lib/libupgrade.a
+LDFLAGS += -Os
+LDFLAGS += -nostdlib
+LDFLAGS += -Wl,--no-check-sections
+LDFLAGS += -u call_user_start
+LDFLAGS += -Wl,-static
+#LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -Wl,-wrap,system_restart_local
 LDFLAGS += -Wl,-wrap,spi_flash_read
-#LDFLAGS += -Wl,-wrap,register_chipv6_phy
+LDFLAGS += -L$(LDDIR)
+LDFLAGS += -Wl,-T$(LDFILE)
+LDFLAGS += -fno-exceptions
+LDFLAGS += -fno-rtti
+
+SDK_LIBS  = $(TOP)/libs/Arduino/tools/sdk/libc/xtensa-lx106-elf/lib/libc.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/libc/xtensa-lx106-elf/lib/libm.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libmesh.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libwpa2.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libsmartconfig.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libespnow.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libpp.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libmain.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libwpa.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/liblwip_gcc.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libnet80211.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libwps.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libcrypto.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libphy.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libhal.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libaxtls.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libgcc.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libstdc++.a
+#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libairkiss.a
+#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libat.a
+#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libdriver.a
+#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libjson.a
+#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libpwm.a
+#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libssl.a
+#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libupgrade.a
 
 
 !cc = |> ^o^ $(CC) $(CFLAGS) $(INCLUDE_FLAGS) -c %f -o %o |> %B.o
 !cxx = |> ^o^ $(CXX) $(CXXFLAGS) $(INCLUDE_FLAGS) -c %f -o %o |> %B.o
 !asm = |> ^o^ $(CC) -x assembler-with-cpp $(CXXFLAGS) $(INCLUDE_FLAGS) -c %f -o %o |> %B.o
 !ar = |> $(AR) crus %o |>
-!elf = | $(TOP)/<libs> |> $(CXX) -o %o  -Wl,-Map,mapfile.map -Wl,--start-group %<libs> $(LDFLAGS) -Wl,--end-group $(CXXFLAGS) |> app.elf | mapfile.map
+!elf = | $(TOP)/<libs> |> $(CXX) -o %o  -Wl,-Map,mapfile.map $(LDFLAGS) $(CXXFLAGS) -Wl,--start-group %<libs> $(SDK_LIBS) -Wl,--end-group |> app.elf | mapfile.map
 #!bin = |> $(OBJCOPY) -v -Obinary %f %o |> app.bin
 #!bin = |> esptool --chip esp8266 elf2image %f |>
 !bin = |> $(ESPTOOL) -eo $(BOOTLOADER) -bo %B.bin -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo app.elf -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec |> %B.bin

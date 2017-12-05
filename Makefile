@@ -1,4 +1,4 @@
-ESPTOOL = tools/esptool
+ESPTOOL = esptool
 ESP_UPLOAD_PORT = /dev/ttyUSB0
 ESP_UPLOAD_SPEED = 115200
 
@@ -16,4 +16,4 @@ ota:
 
 upload:
 	tup && \
-		$(ESPTOOL) -vv -cd nodemcu -cb $(ESP_UPLOAD_SPEED) -cp $(ESP_UPLOAD_PORT) -cf app.bin
+		$(ESPTOOL) --port $(ESP_UPLOAD_PORT) write_flash 0 app.bin
