@@ -85,13 +85,13 @@ SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libhal.a
 SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libaxtls.a
 SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libgcc.a
 SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libstdc++.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libssl.a
+SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libupgrade.a
 #SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libairkiss.a
 #SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libat.a
 #SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libdriver.a
 #SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libjson.a
 #SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libpwm.a
-#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libssl.a
-#SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libupgrade.a
 
 
 !cc = |> ^o^ $(CC) $(CFLAGS) $(INCLUDE_FLAGS) -c %f -o %o |> %B.o
