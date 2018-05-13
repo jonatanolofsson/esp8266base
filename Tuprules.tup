@@ -69,7 +69,6 @@ LDFLAGS += -fno-rtti
 
 SDK_LIBS  = $(TOP)/libs/Arduino/tools/sdk/libc/xtensa-lx106-elf/lib/libc.a
 SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/libc/xtensa-lx106-elf/lib/libm.a
-SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libmesh.a
 SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libwpa2.a
 SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libsmartconfig.a
 SDK_LIBS += $(TOP)/libs/Arduino/tools/sdk/lib/libespnow.a

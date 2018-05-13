@@ -12,7 +12,7 @@ PHDRS
 
 
 /*  Default entry point:  */
-ENTRY(call_user_start)
+ENTRY(app_entry)
 EXTERN(_DebugExceptionVector)
 EXTERN(_DoubleExceptionVector)
 EXTERN(_KernelExceptionVector)
@@ -82,6 +82,10 @@ SECTIONS
     . = ALIGN(4);
     _Pri_3_HandlerAddress = ABSOLUTE(.);
     _data_end = ABSOLUTE(.);
+  } >dram0_0_seg :dram0_0_phdr
+  .noinit : ALIGN(4)
+  {
+    *(.noinit)
   } >dram0_0_seg :dram0_0_phdr
 
   .rodata : ALIGN(4)
@@ -171,7 +175,6 @@ SECTIONS
     *libespnow.a:(.literal.* .text.*)
     *libjson.a:(.literal.* .text.*)
     *liblwip.a:(.literal.* .text.*)
-    *libmesh.a:(.literal.* .text.*)
     *libnet80211.a:(.literal.* .text.*)
     *libsmartconfig.a:(.literal.* .text.*)
     *libssl.a:(.literal.* .text.*)

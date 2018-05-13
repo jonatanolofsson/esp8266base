@@ -6,7 +6,7 @@ ESP_UPLOAD_SPEED = 115200
 ESP_UPLOAD = $(ESPTOOL) --baud=$(ESP_UPLOAD_SPEED) --port $(ESP_UPLOAD_PORT)
 
 ota:
-	tup && python tools/espota.py -i 192.168.1.66 -f app.bin
+	tup && python tools/espota.py -i 192.168.0.108 -f app.bin
 
 upload:
 	tup && \
