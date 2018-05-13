@@ -179,12 +179,21 @@ namespace ota {
     }
 }
 
+namespace app {
+    void setup() {
+    }
+
+    void loop() {
+    }
+}
+
 void setup() {
     Serial.begin(9600);
     wifi::setup();
     http::setup();
     mqtt::setup();
     ota::setup();
+    app::setup();
 }
 
 void loop() {
@@ -192,5 +201,6 @@ void loop() {
     http::loop();
     mqtt::loop();
     ota::loop();
+    app::loop();
     wifi::print_info();
 }
