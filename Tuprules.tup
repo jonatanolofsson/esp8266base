@@ -45,6 +45,7 @@ CFLAGS += -isystem$(TOP)/libs/Arduino/tools/sdk/libc/xtensa-lx106-elf/include
 CFLAGS += -ffunction-sections
 CFLAGS += -fdata-sections
 CFLAGS += -falign-functions=4
+CFLAGS += -DNDEBUG
 
 CXXFLAGS  = $(CFLAGS)
 CXXFLAGS += -std=gnu++11

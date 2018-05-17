@@ -53,7 +53,7 @@ WiFiClient wifi_client;
 PubSubClient mqtt(wifi_client);
 
 boolean ICACHE_FLASH_ATTR reconnect() {
-    static int last = -2 * reconnect_interval;
+    static uint64_t  last = -2 * reconnect_interval;
     uint64_t  now = millis();
     if (now - last > reconnect_interval) {
         static IPAddress old_ip;
@@ -97,6 +97,7 @@ void ICACHE_FLASH_ATTR loop() {
 }  // namespace ota
 
 namespace app {
+const float UPFACTOR = 1.03;
 enum STATE {
     HALTED = 0,
     MOVING_UP = 1,
@@ -112,23 +113,24 @@ struct Motor {
     };
     ShadeState shadestate;
     uint64_t  action_started;
-    uint64_t  speed;
+    uint16_t  speed;
     STATE state;
 
-    Motor(const char* name_, int eepromaddress_, int out1_, int out2_, int pwm_, int speed_ = PWMRANGE)
-    : name(name_),
-      eepromaddress(eepromaddress_ * sizeof(ShadeState)),
-      out1(out1_),
-      out2(out2_),
-      pwm(pwm_),
-      speed(speed_),
-      state(HALTED) {
-        EEPROM.get(eepromaddress, shadestate);
-        pinMode(out1, OUTPUT);
-        pinMode(out2, OUTPUT);
-        pinMode(pwm, OUTPUT);
-    }
 };
+
+void ICACHE_FLASH_ATTR init_motor(Motor& motor, const char* name_, int eepromaddress_, int out1_, int out2_, int pwm_, int speed_ = PWMRANGE) {
+    motor.name = name_;
+    motor.eepromaddress = eepromaddress_ * sizeof(Motor::ShadeState);
+    motor.out1 = out1_;
+    motor.out2 = out2_;
+    motor.pwm = pwm_;
+    motor.speed = speed_;
+    motor.state = HALTED;
+    EEPROM.get(motor.eepromaddress, motor.shadestate);
+    pinMode(motor.out1, OUTPUT);
+    pinMode(motor.out2, OUTPUT);
+    pinMode(motor.pwm, OUTPUT);
+}
 
 void ICACHE_FLASH_ATTR send_state(Motor& motor) {
     StaticJsonBuffer<50> jsonbuffer;
@@ -150,7 +152,7 @@ void ICACHE_FLASH_ATTR stop(Motor& motor) {
     digitalWrite(motor.out1, LOW);
     digitalWrite(motor.out2, LOW);
     analogWrite(motor.pwm, 0);
-    motor.shadestate.current_level += (millis() - motor.action_started) * (motor.state == MOVING_DOWN ? 1 : -1);
+    motor.shadestate.current_level += (millis() - motor.action_started) * (motor.state == MOVING_DOWN ? 1.0 : -1.0 / UPFACTOR);
     EEPROM.put(motor.eepromaddress, motor.shadestate);
     motor.state = HALTED;
     send_state(motor);
@@ -185,8 +187,8 @@ void ICACHE_FLASH_ATTR move(Motor& motor, float level) {
     Serial.print("Move to ");
     Serial.println(level);
 
-    int64_t  diff = uint64_t (level * motor.shadestate.full_time) - motor.shadestate.current_level;
-    if (diff < 0) { up(motor); diff = -diff; } else { down(motor); }
+    int32_t  diff = uint32_t(level * motor.shadestate.full_time) - motor.shadestate.current_level;
+    if (diff < 0) { up(motor); diff = -diff * UPFACTOR; } else { down(motor); }
     schedule_stop(motor, millis() + diff);
 }
 
@@ -234,8 +236,8 @@ void ICACHE_FLASH_ATTR command(Motor& motor, char* topic, byte* payload) {
     }
 }
 
-Motor a("blinds1", 0, D0, D2, D1);
-Motor b("blinds0", 1, D5, D6, D7);
+Motor a;
+Motor b;
 
 void ICACHE_FLASH_ATTR blinds_command_a(char* topic, byte* payload, unsigned int) { command(a, topic, payload); }
 void ICACHE_FLASH_ATTR blinds_command_b(char* topic, byte* payload, unsigned int) { command(b, topic, payload); }
@@ -248,6 +250,9 @@ void ICACHE_FLASH_ATTR setup() {
     digitalWrite(D4, LOW);
 
     EEPROM.begin(2 * sizeof(Motor::ShadeState));
+
+    init_motor(a, "blinds1", 0, D0, D2, D1);
+    init_motor(b, "blinds0", 1, D5, D6, D7);
 
     mqtt::mqtt.subscribe("blinds1/command", blinds_command_a);
     mqtt::mqtt.subscribe("blinds0/command", blinds_command_b);
