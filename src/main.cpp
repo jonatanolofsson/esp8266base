@@ -1,5 +1,6 @@
 // Copyright 2018 Jonatan Olofsson
 #include <Arduino.h>
+#include <Wire.h>
 #include <ArduinoJson.h>
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
@@ -104,8 +105,10 @@ enum STATE {
     MOVING_DOWN = 2
 };
 struct Motor {
+    uint8_t shield_no;
+    uint8_t i2c_addr;
     const char* name;
-    int eepromaddress, out1, out2, pwm;
+    std::size_t eepromaddress;
     uint64_t  scheduled_stop = 0;
     struct ShadeState {
         int32_t current_level = 0;
@@ -118,18 +121,14 @@ struct Motor {
 
 };
 
-void ICACHE_FLASH_ATTR init_motor(Motor& motor, const char* name_, int eepromaddress_, int out1_, int out2_, int pwm_, int speed_ = PWMRANGE) {
-    motor.name = name_;
-    motor.eepromaddress = eepromaddress_ * sizeof(Motor::ShadeState);
-    motor.out1 = out1_;
-    motor.out2 = out2_;
-    motor.pwm = pwm_;
-    motor.speed = speed_;
+void ICACHE_FLASH_ATTR init_motor(Motor& motor, uint8_t number, uint8_t i2c_addr, const uint8_t shield_no, const char* name, const uint16_t speed=10000) {
+    motor.shield_no = shield_no;
+    motor.i2c_addr = i2c_addr;
+    motor.name = name;
+    motor.eepromaddress = number * sizeof(Motor::ShadeState);
+    motor.speed = speed;
     motor.state = HALTED;
     EEPROM.get(motor.eepromaddress, motor.shadestate);
-    pinMode(motor.out1, OUTPUT);
-    pinMode(motor.out2, OUTPUT);
-    pinMode(motor.pwm, OUTPUT);
 }
 
 void ICACHE_FLASH_ATTR send_state(Motor& motor) {
@@ -145,13 +144,22 @@ void ICACHE_FLASH_ATTR send_state(Motor& motor) {
     mqtt::mqtt.publish(jsontopic, jsoncbuffer);
 }
 
+void ICACHE_FLASH_ATTR set_motor(const Motor& motor, const uint8_t dir)
+{
+	Wire.beginTransmission(motor.i2c_addr);
+	Wire.write(motor.shield_no | (byte)0x10);
+	Wire.write(dir);
+
+	Wire.write((uint8_t)(motor.speed >> 8));
+	Wire.write((uint8_t)motor.speed);
+	Wire.endTransmission();     // stop transmitting
+}
+
 void ICACHE_FLASH_ATTR stop(Motor& motor) {
     if (motor.state == HALTED) {
         return;
     }
-    digitalWrite(motor.out1, LOW);
-    digitalWrite(motor.out2, LOW);
-    analogWrite(motor.pwm, 0);
+    set_motor(motor, 3);
     motor.shadestate.current_level += (millis() - motor.action_started) * (motor.state == MOVING_DOWN ? 1.0 : -1.0 / UPFACTOR);
     EEPROM.put(motor.eepromaddress, motor.shadestate);
     motor.state = HALTED;
@@ -160,18 +168,14 @@ void ICACHE_FLASH_ATTR stop(Motor& motor) {
 
 void ICACHE_FLASH_ATTR up(Motor& motor) {
     stop(motor);
-    digitalWrite(motor.out1, HIGH);
-    digitalWrite(motor.out2, LOW);
-    analogWrite(motor.pwm, motor.speed);
+    set_motor(motor, 1);
     motor.action_started = millis();
     motor.state = MOVING_UP;
 }
 
 void ICACHE_FLASH_ATTR down(Motor& motor) {
     stop(motor);
-    digitalWrite(motor.out1, LOW);
-    digitalWrite(motor.out2, HIGH);
-    analogWrite(motor.pwm, motor.speed);
+    set_motor(motor, 2);
     motor.action_started = millis();
     motor.state = MOVING_DOWN;
 }
@@ -236,13 +240,20 @@ void ICACHE_FLASH_ATTR command(Motor& motor, char* topic, byte* payload) {
     }
 }
 
-Motor a;
-Motor b;
+Motor motors[6];
 
-void ICACHE_FLASH_ATTR blinds_command_a(char* topic, byte* payload, unsigned int) { command(a, topic, payload); }
-void ICACHE_FLASH_ATTR blinds_command_b(char* topic, byte* payload, unsigned int) { command(b, topic, payload); }
-void ICACHE_FLASH_ATTR send_state_a(char* topic, byte* payload, unsigned int) { send_state(a); }
-void ICACHE_FLASH_ATTR send_state_b(char* topic, byte* payload, unsigned int) { send_state(b); }
+void ICACHE_FLASH_ATTR blinds_command_0(char* topic, byte* payload, unsigned int) { command(motors[0], topic, payload); }
+void ICACHE_FLASH_ATTR blinds_command_1(char* topic, byte* payload, unsigned int) { command(motors[1], topic, payload); }
+void ICACHE_FLASH_ATTR blinds_command_2(char* topic, byte* payload, unsigned int) { command(motors[2], topic, payload); }
+void ICACHE_FLASH_ATTR blinds_command_3(char* topic, byte* payload, unsigned int) { command(motors[3], topic, payload); }
+void ICACHE_FLASH_ATTR blinds_command_4(char* topic, byte* payload, unsigned int) { command(motors[4], topic, payload); }
+void ICACHE_FLASH_ATTR blinds_command_5(char* topic, byte* payload, unsigned int) { command(motors[5], topic, payload); }
+void ICACHE_FLASH_ATTR send_state_0(char* topic, byte* payload, unsigned int) { send_state(motors[0]); }
+void ICACHE_FLASH_ATTR send_state_1(char* topic, byte* payload, unsigned int) { send_state(motors[1]); }
+void ICACHE_FLASH_ATTR send_state_2(char* topic, byte* payload, unsigned int) { send_state(motors[2]); }
+void ICACHE_FLASH_ATTR send_state_3(char* topic, byte* payload, unsigned int) { send_state(motors[3]); }
+void ICACHE_FLASH_ATTR send_state_4(char* topic, byte* payload, unsigned int) { send_state(motors[4]); }
+void ICACHE_FLASH_ATTR send_state_5(char* topic, byte* payload, unsigned int) { send_state(motors[5]); }
 
 void ICACHE_FLASH_ATTR setup() {
     // Turn off LED
@@ -251,18 +262,31 @@ void ICACHE_FLASH_ATTR setup() {
 
     EEPROM.begin(2 * sizeof(Motor::ShadeState));
 
-    init_motor(a, "blinds1", 0, D0, D2, D1);
-    init_motor(b, "blinds0", 1, D5, D6, D7);
+    init_motor(motors[0], 0, 0x2D, 0, "blinds0");
+    init_motor(motors[1], 1, 0x2D, 1, "blinds1");
+    init_motor(motors[2], 2, 0x2E, 0, "blinds2");
+    init_motor(motors[3], 3, 0x2E, 1, "blinds3");
+    init_motor(motors[4], 4, 0x2F, 0, "blinds4");
+    init_motor(motors[5], 5, 0x2F, 1, "blinds5");
 
-    mqtt::mqtt.subscribe("blinds1/command", blinds_command_a);
-    mqtt::mqtt.subscribe("blinds0/command", blinds_command_b);
-    mqtt::mqtt.subscribe("blinds1/send_state", send_state_a);
-    mqtt::mqtt.subscribe("blinds0/send_state", send_state_b);
+    mqtt::mqtt.subscribe("blinds0/command", blinds_command_0);
+    mqtt::mqtt.subscribe("blinds1/command", blinds_command_1);
+    mqtt::mqtt.subscribe("blinds2/command", blinds_command_2);
+    mqtt::mqtt.subscribe("blinds3/command", blinds_command_3);
+    mqtt::mqtt.subscribe("blinds4/command", blinds_command_4);
+    mqtt::mqtt.subscribe("blinds5/command", blinds_command_5);
+    mqtt::mqtt.subscribe("blinds0/send_state", send_state_0);
+    mqtt::mqtt.subscribe("blinds1/send_state", send_state_1);
+    mqtt::mqtt.subscribe("blinds2/send_state", send_state_2);
+    mqtt::mqtt.subscribe("blinds3/send_state", send_state_3);
+    mqtt::mqtt.subscribe("blinds4/send_state", send_state_4);
+    mqtt::mqtt.subscribe("blinds5/send_state", send_state_5);
 }
 
 void ICACHE_FLASH_ATTR loop() {
-    motorloop(a);
-    motorloop(b);
+    for (std::size_t i = 0; i < sizeof(motors); ++i) {
+        motorloop(motors[i]);
+    }
 }
 }  // namespace app
 
