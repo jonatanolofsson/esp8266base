@@ -11,9 +11,9 @@ INCLUDE_FLAGS += -I$(TOP)/libs/Arduino/tools/sdk/lwip/include
 #: foreach Arduino/cores/$(CHIP)/spiffs/*.c |> !cc -I$(TOP)/libs/Arduino/cores/$(CHIP)/spiffs |> Arduino/cores/$(CHIP)/spiffs/%B.o ./<Arduino>
 #: foreach Arduino/cores/$(CHIP)/libb64/*.c |> !cc -I$(TOP)/libs/Arduino/cores/$(CHIP)/libb64 |> Arduino/cores/$(CHIP)/libb64/%B.o ./<Arduino>
 : foreach Arduino/cores/$(CHIP)/*.cpp |> !cxx |> Arduino/cores/$(CHIP)/%B.o ./<Arduino>
-: foreach Arduino/libraries/ArduinoOTA/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ArduinoOTA -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src -I$(TOP)/libs/Arduino/libraries/ESP8266mDNS |> Arduino/libraries/ArduinoOTA/%B.o ./<Arduino>
+: foreach Arduino/libraries/ArduinoOTA/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ArduinoOTA -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src -I$(TOP)/libs/Arduino/libraries/ESP8266mDNS/src |> Arduino/libraries/ArduinoOTA/%B.o ./<Arduino>
 : foreach Arduino/libraries/ESP8266httpUpdate/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266httpUpdate/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src -I$(TOP)/libs/Arduino/libraries/ESP8266HTTPClient/src |> Arduino/libraries/ESP8266httpUpdate/src/%B.o ./<Arduino>
-: foreach Arduino/libraries/ESP8266mDNS/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266mDNS -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266mDNS/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/ESP8266mDNS/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266mDNS/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266mDNS/src/%B.o ./<Arduino>
 : foreach Arduino/libraries/ESP8266WebServer/src/*.cpp Arduino/libraries/ESP8266WebServer/src/detail/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266WebServer/src -I$(TOP)/libs/Arduino/libraries/ESP8266WebServer/src/detail -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266WebServer/src/%B.o ./<Arduino>
 #: foreach Arduino/libraries/Ethernet/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Ethernet/src -I$(TOP)/libs/Arduino/libraries/SPI |> Arduino/libraries/Ethernet/src/%B.o ./<Arduino>
 #: foreach Arduino/libraries/SD/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/SD/src -I$(TOP)/libs/Arduino/libraries/SPI |> Arduino/libraries/SD/src/%B.o ./<Arduino>
@@ -24,7 +24,7 @@ INCLUDE_FLAGS += -I$(TOP)/libs/Arduino/tools/sdk/lwip/include
 : foreach Arduino/libraries/ESP8266HTTPUpdateServer/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266HTTPUpdateServer/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src -I$(TOP)/libs/Arduino/libraries/ESP8266WebServer/src |> Arduino/libraries/ESP8266HTTPUpdateServer/src/%B.o ./<Arduino>
 #: foreach Arduino/libraries/ESP8266NetBIOS/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266NetBIOS -I$(TOP)/libs/Arduino/libraries/ESP8266NetBIOS -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266NetBIOS/%B.o ./<Arduino>
 : foreach Arduino/libraries/ESP8266WiFi/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/SD/src -I$(TOP)/libs/Arduino/libraries/SPI -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266WiFi/src/%B.o ./<Arduino>
-: foreach Arduino/libraries/Servo/src/esp8266/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Servo/src -I$(TOP)/libs/Arduino/libraries/Servo/src/esp8266 |> Arduino/libraries/Servo/src/%B.o ./<Arduino>
+: foreach Arduino/libraries/Servo/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/Servo/src -I$(TOP)/libs/Arduino/libraries/Servo/src |> Arduino/libraries/Servo/src/%B.o ./<Arduino>
 : foreach Arduino/libraries/EEPROM/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/EEPROM |> Arduino/libraries/EEPROM/%B.o ./<Arduino>
 : foreach Arduino/libraries/ESP8266HTTPClient/src/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266HTTPClient/src -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266HTTPClient/src/%B.o ./<Arduino>
 #: foreach Arduino/libraries/ESP8266LLMNR/*.cpp |> !cxx -I$(TOP)/libs/Arduino/libraries/ESP8266LLMNR -I$(TOP)/libs/Arduino/libraries/ESP8266WiFi/src |> Arduino/libraries/ESP8266LLMNR/%B.o ./<Arduino>
